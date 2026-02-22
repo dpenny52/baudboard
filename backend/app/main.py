@@ -37,6 +37,7 @@ app.include_router(boards.router)
 app.include_router(columns.router)
 app.include_router(cards.router)
 
+
 @app.get("/api/health")
 async def health_check():
     """Health check endpoint."""
