@@ -4,7 +4,7 @@ Each task is a discrete, implementable unit with clear acceptance criteria. Task
 
 ---
 
-## Task 1: Project Scaffolding & Backend Foundation
+## Task 1: Project Scaffolding & Backend Foundation ✅ COMPLETED
 
 **Goal**: Set up the project structure, backend framework, and database layer.
 
