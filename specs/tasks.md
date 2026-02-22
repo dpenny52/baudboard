@@ -38,7 +38,7 @@ Each task is a discrete, implementable unit with clear acceptance criteria. Task
 
 ---
 
-## Task 2: Board & Column CRUD API
+## Task 2: Board & Column CRUD API ✅ COMPLETED
 
 **Goal**: Implement REST endpoints for boards and columns.
 
