@@ -30,7 +30,7 @@ agents:
       - To install npm dependencies:
         cd /home/baudbot_agent/workspace/baudboard/frontend && PATH=/home/baudbot_agent/opt/node-v22.14.0-linux-x64/bin:$PATH npm install
       - To install pip dependencies:
-        cd /home/baudbot_agent/workspace/baudboard/backend && pip install -e .
+        cd /home/baudbot_agent/workspace/baudboard/backend && /home/baudbot_agent/.local/bin/pip install -e . --break-system-packages
       - Send only ONE command at a time, wait for the result before continuing
 
       When to use the runner:
@@ -49,7 +49,7 @@ agents:
       - list-dir
 
   dev:
-    model: openai/gpt-4o-mini
+    model: anthropic/claude-sonnet-4-5-20250929
     role: |
       You are a senior full-stack developer working on Baudboard, a kanban board application.
 
