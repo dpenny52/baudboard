@@ -1,51 +1,46 @@
 from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List
 from sqlalchemy.future import select
-from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.models import Label, Board
+from app.dependencies import get_db
+from app.schemas import LabelCreate, LabelUpdate
 
 router = APIRouter()
 
-class LabelBase(BaseModel):
-    name: str
-    color: str
-
-class LabelCreate(LabelBase):
-    pass
-
-class LabelResponse(LabelBase):
-    id: int
-    board_id: int
-
-# Dependency to get the DB session
-async def get_db_session() -> AsyncSession:
-    # Implementation for getting session
-    pass
-
-@router.get("/api/boards/{board_id}/labels", response_model=List[LabelResponse])
-async def list_labels(board_id: int, db: AsyncSession = Depends(get_db_session)):
+@router.get("/api/boards/{board_id}/labels", response_model=List[Label])
+async def list_labels(board_id: str, db: AsyncSession = Depends(get_db)):
+    board = await db.get(Board, board_id)
+    if not board:
+        raise HTTPException(status_code=404, detail="Board not found")
     result = await db.execute(select(Label).where(Label.board_id == board_id))
     return result.scalars().all()
 
-@router.post("/api/boards/{board_id}/labels", response_model=LabelResponse)
-async def create_label(board_id: int, label: LabelCreate, db: AsyncSession = Depends(get_db_session)):
-    new_label = Label(**label.dict(), board_id=board_id)
-    db.add(new_label)
+@router.post("/api/boards/{board_id}/labels", response_model=Label)
+async def create_label(board_id: str, new_label: LabelCreate, db: AsyncSession = Depends(get_db)):
+    board = await db.get(Board, board_id)
+    if not board:
+        raise HTTPException(status_code=404, detail="Board not found")
+    label = Label(**new_label.dict(), board_id=board_id)
+    db.add(label)
     await db.commit()
-    await db.refresh(new_label)
-    return new_label
+    return label
 
-@router.put("/api/labels/{label_id}", response_model=LabelResponse)
-async def update_label(label_id: int, label_data: LabelBase, db: AsyncSession = Depends(get_db_session)):
-    query = update(Label).where(Label.id == label_id).values(label_data.dict())
-    await db.execute(query)
+@router.put("/api/labels/{label_id}", response_model=Label)
+async def update_label(label_id: str, updated_label: LabelUpdate, db: AsyncSession = Depends(get_db)):
+    label = await db.get(Label, label_id)
+    if not label:
+        raise HTTPException(status_code=404, detail="Label not found")
+    for key, value in updated_label.dict(exclude_unset=True).items():
+        setattr(label, key, value)
     await db.commit()
-    return await db.get(Label, label_id)
+    return label
 
 @router.delete("/api/labels/{label_id}")
-async def delete_label(label_id: int, db: AsyncSession = Depends(get_db_session)):
+async def delete_label(label_id: str, db: AsyncSession = Depends(get_db)):
     label = await db.get(Label, label_id)
     if not label:
         raise HTTPException(status_code=404, detail="Label not found")
     await db.delete(label)
     await db.commit()
-    return {"deleted": True}
+    return {"detail": "Label deleted successfully"}

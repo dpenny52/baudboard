@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import create_tables
-from app.routers import boards, columns, cards
+from app.routers import boards, columns, labels
 
 
 @asynccontextmanager
@@ -35,8 +35,7 @@ app.add_middleware(
 # Register routers
 app.include_router(boards.router)
 app.include_router(columns.router)
-app.include_router(cards.router)
-
+app.include_router(labels.router)
 
 @app.get("/api/health")
 async def health_check():
