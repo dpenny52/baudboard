@@ -1,7 +1,6 @@
 from datetime import datetime
-from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # Request Models
@@ -27,14 +26,20 @@ class ColumnCreate(BaseModel):
 class ColumnUpdate(BaseModel):
     """Request model for updating a column."""
 
-    name: str
-    color: str
+    name: str | None = None
+    color: str | None = None
+
+
+class ColumnReorder(BaseModel):
+    """Request model for reordering columns."""
+
+    column_ids: list[str]
 
 
 class CardCreate(BaseModel):
     """Request model for creating a card."""
 
-    column_id: UUID
+    column_id: str
     title: str
     description: str | None = None
 
@@ -51,7 +56,7 @@ class CardUpdate(BaseModel):
 class CardMove(BaseModel):
     """Request model for moving a card."""
 
-    column_id: UUID
+    column_id: str
     position: int
 
 
@@ -75,7 +80,7 @@ class LabelResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID
+    id: str = Field(serialization_alias="id")
     name: str
     color: str
 
@@ -85,9 +90,9 @@ class CardResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID
-    board_id: UUID
-    column_id: UUID
+    id: str = Field(serialization_alias="id")
+    board_id: str
+    column_id: str
     title: str
     description: str | None
     position: int
@@ -102,8 +107,8 @@ class ColumnResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID
-    board_id: UUID
+    id: str = Field(serialization_alias="id")
+    board_id: str
     name: str
     position: int
     color: str
@@ -115,7 +120,7 @@ class BoardResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID
+    id: str = Field(serialization_alias="id")
     name: str
     created_at: datetime
 
@@ -125,7 +130,7 @@ class BoardDetailResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID
+    id: str = Field(serialization_alias="id")
     name: str
     created_at: datetime
     updated_at: datetime

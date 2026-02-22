@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import create_tables
+from app.routers import boards, columns
 
 
 @asynccontextmanager
@@ -30,6 +31,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register routers
+app.include_router(boards.router)
+app.include_router(columns.router)
 
 
 @app.get("/api/health")
