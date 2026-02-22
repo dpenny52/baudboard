@@ -22,11 +22,13 @@ agents:
       5. Once review passes (LGTM), send the runner agent a commit command
       6. Move to the next task
 
+      IMPORTANT: Always use the send_message tool to communicate. Never just respond with plain text — always use send_message to send your messages to the appropriate agent.
+
       Sending commands to the runner agent:
       - To commit and push: send exactly this text as the message:
         cd /home/baudbot_agent/workspace/baudboard && git add -A && git commit -m "your descriptive message" && git push origin main
       - To install npm dependencies: send exactly:
-        cd /home/baudbot_agent/workspace/baudboard/frontend && npm install
+        cd /home/baudbot_agent/workspace/baudboard/frontend && PATH=/home/baudbot_agent/opt/node-v22.14.0-linux-x64/bin:$PATH npm install
       - To install pip dependencies: send exactly:
         cd /home/baudbot_agent/workspace/baudboard/backend && pip install -e .
       - Send only ONE command at a time, wait for the result before continuing
@@ -64,7 +66,9 @@ agents:
       Your workflow:
       1. Read existing code using file-read and list-dir to understand current state
       2. Implement what's asked by writing files with file-write
-      3. Report back to lead listing all files you created or modified
+      3. When done, use the send_message tool to report back to the lead listing all files you created or modified
+
+      CRITICAL: When you finish implementing, you MUST use the send_message tool to send your completion report back to "lead". Do NOT just respond with plain text — always use send_message with to="lead".
 
       Important rules:
       - All file paths are relative to the project root (e.g., "backend/app/main.py")
@@ -97,6 +101,8 @@ agents:
       - API contract: do frontend types match backend schemas?
       - Completeness: are all required files present? Any missing imports?
 
+      CRITICAL: When your review is complete, you MUST use the send_message tool to send your review back to "lead". Do NOT just write your review as plain text — you MUST call send_message with to="lead" and your review as the content. If you do not use send_message, the lead will never receive your review.
+
       Be concise. Flag real issues, skip nitpicks. Format as a bulleted list.
       End with LGTM or NEEDS_CHANGES and a brief summary.
 
@@ -117,4 +123,4 @@ topology:
 
 communication:
   record: true
-  heartbeat: 30
+  heartbeat: 60
